@@ -21,26 +21,39 @@ xor dl, dl
 xor bh, bh
 int 0x10
 
+mov si, padding
+call printString
 
 mov si, greeting
-mov ah, 0x0e
-loop:
-  lodsb
-  test al, al
-  jz end
+call printString
 
-  int 0x10
-  jmp loop
+mov si, padding
+call printString
+
+jmp end
+
+;; SI points to the string
+printString:
+  mov ah, 0x0e
+  .loop:
+    lodsb
+    test al, al
+    jz .end
+
+    int 0x10
+    jmp .loop
+  .end:
+    ret
+
 end:
   hlt
 
 ;; Write Greeting
 greeting:
-  db "== Welcome to GoofyOS =="
+  db "== Welcome to GoofyOS ==", 13, 10, 0
 
 padding:
-  db "========================"
-
+  db "========================", 13, 10, 0
 
 times 510 - ($-$$) db 0
 dw 0xaa55
