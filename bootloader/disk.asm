@@ -21,8 +21,6 @@ disk_load:
     popa
     ret
 
-
-
 disk_error:
     jmp disk_error
     

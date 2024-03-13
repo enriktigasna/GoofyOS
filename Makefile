@@ -1,22 +1,24 @@
-all: run
+BUILD_DIR = build
+BOOTLOADER_DIR = bootloader
+KERNEL_DIR = kernel
 
-kernel.bin: kernel-entry.o kernel.o
+all: $(BUILD_DIR)/os-image.bin
+
+
+$(BUILD_DIR)/mbr.bin: $(BOOTLOADER_DIR)/mbr.asm
+	nasm -f bin $< -o $@
+
+$(BUILD_DIR)/kernel.o: $(KERNEL_DIR)/kernel.c
+	gcc -fno-pie -m32 -ffreestanding -c $< -o $@
+
+$(BUILD_DIR)/kernel-entry.o: $(KERNEL_DIR)/kernel-entry.asm
+	nasm -f elf $< -o $@
+
+$(BUILD_DIR)/kernel.bin: $(BUILD_DIR)/kernel-entry.o $(BUILD_DIR)/kernel.o
 	ld -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
 
-kernel-entry.o: kernel-entry.asm
-	nasm $< -f elf -o $@
-
-kernel.o: kernel.c
-	gcc -m32 -ffreestanding -c $< -o $@
-
-mbr.bin: mbr.asm
-	nasm $< -f bin -o $@
-
-os-image.bin: mbr.bin kernel.bin
+$(BUILD_DIR)/os-image.bin: $(BUILD_DIR)/mbr.bin $(BUILD_DIR)/kernel.bin
 	cat $^ > $@
 
-run: os-image.bin
-	qemu-system-i386 -fda $<
-
 clean:
-	$(RM) *.bin *.o *.dis
+	rm -rf $(BUILD_DIR)/*.bin $(BUILD_DIR)/*.o

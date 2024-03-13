@@ -1,15 +1,15 @@
 GDT_Start:
-    null_descriptor:
+    GDT_Null:
         dd 0
         dd 0
-    code_descriptor:
+    GDT_Code:
         dw 0xffff
         dw 0
         db 0
         db 10011010b
         db 11001111b
         db 0
-    data_descriptor:
+    GDT_Data:
         dw 0xffff
         dw 0
         db 0
@@ -22,5 +22,5 @@ GDT_Descriptor:
     dw GDT_End - GDT_Start - 1
     dd GDT_Start
 
-CODE_SEG equ code_descriptor - GDT_Start
-DATA_SEG equ data_descriptor - GDT_Start
+CODE_SEG equ GDT_Code - GDT_Start
+DATA_SEG equ GDT_Data - GDT_Start
