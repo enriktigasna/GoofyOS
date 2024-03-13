@@ -1,70 +1,43 @@
 bits 16
-
 org 0x7c00
 
+;; What memory region kernel will be loaded in
+KERNEL_OFFSET equ 0x1000
+
+;; BIOS stores boot drive in dl register
+mov [BOOT_DRIVE], dl
 
 ;; Set up stack pointer
-;; Stack grows downwards from 0x7c00 to 0x0000
-mov ax, 0x0000
-mov ss, ax
-mov sp, 0x7c00
+;; Stack grows downwards from 0x9000
+mov bp, 0x9000
+mov sp, bp
 
+call load_kernel
+call switch_to_32bit
 
+jmp $
 
+%include "disk.asm"
+%include "gdt.asm"
+%include "protected_mode.asm"
 
-.flushScreen:
-  ;; Clear screen
-  mov ah, 0x06
-  mov bh, 0x09
+load_kernel:
+  mov bx, KERNEL_OFFSET
+  mov dh, 2
+  mov dl, BOOT_DRIVE
+  call disk_load
+  ret
 
-  xor al, al ; Both are set to 0
-  xor cx, cx
+bits 32
+BEGIN_32:
+  call KERNEL_OFFSET
+  jmp $
 
-  mov dx, 0x184f
-  mov bh, 0x09
-  int 0x10
+;; Storing default boot drive here
+;; Should be put here at beginning of mbr execution from dl register
+BOOT_DRIVE:
+  db 0
 
-.printGreeting:
-  ;; Set cursor to 0
-  mov ah, 0x02
-  xor dh, dh
-  xor dl, dl
-  xor bh, bh
-  int 0x10
-
-  mov si, padding
-  call printString
-
-  mov si, greeting
-  call printString
-
-  mov si, padding
-  call printString
-
-  jmp end
-
-;; SI points to the string
-printString:
-  mov ah, 0x0e
-  .loop:
-    lodsb
-    test al, al
-    jz .end
-
-    int 0x10
-    jmp .loop
-  .end:
-    ret
-
-end:
-  hlt
-
-;; Write Greeting
-greeting:
-  db "== Welcome to GoofyOS ==", 13, 10, 0
-
-padding:
-  db "========================", 13, 10, 0
-
+;; Magic number for boot sector after padding rest of sector with 0s
 times 510 - ($-$$) db 0
 dw 0xaa55

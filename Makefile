@@ -1,13 +1,22 @@
-BUILD_DIR = build
+all: run
 
-all: $(BUILD_DIR)/bootloader.bin
+kernel.bin: kernel-entry.o kernel.o
+	ld -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
 
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+kernel-entry.o: kernel-entry.asm
+	nasm $< -f elf -o $@
 
-$(BUILD_DIR)/bootloader.bin: mbr.asm | $(BUILD_DIR)
-	nasm -f bin mbr.asm -o $(BUILD_DIR)/bootloader.bin
+kernel.o: kernel.c
+	gcc -m32 -ffreestanding -c $< -o $@
+
+mbr.bin: mbr.asm
+	nasm $< -f bin -o $@
+
+os-image.bin: mbr.bin kernel.bin
+	cat $^ > $@
+
+run: os-image.bin
+	qemu-system-i386 -fda $<
 
 clean:
-	rm -rf $(BUILD_DIR)
-
+	$(RM) *.bin *.o *.dis
