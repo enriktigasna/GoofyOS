@@ -2,7 +2,7 @@ BUILD_DIR = build
 BOOTLOADER_DIR = bootloader
 KERNEL_DIR = kernel
 
-all: $(BUILD_DIR)/os-image.bin
+all: $(BUILD_DIR)/os-image.img
 
 
 $(BUILD_DIR)/mbr.bin: $(BOOTLOADER_DIR)/mbr.asm
@@ -17,8 +17,13 @@ $(BUILD_DIR)/kernel-entry.o: $(KERNEL_DIR)/kernel-entry.asm
 $(BUILD_DIR)/kernel.bin: $(BUILD_DIR)/kernel-entry.o $(BUILD_DIR)/kernel.o
 	ld -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
 
-$(BUILD_DIR)/os-image.bin: $(BUILD_DIR)/mbr.bin $(BUILD_DIR)/kernel.bin
-	cat $^ > $@
+$(BUILD_DIR)/os-image.img: $(BUILD_DIR)/mbr.bin $(BUILD_DIR)/kernel.bin
+	dd if=/dev/zero of=$(BUILD_DIR)/os-image.img bs=512 count=8320
+	mkfs.fat -F 32 -s 1 -n "GOOFYOS" $(BUILD_DIR)/os-image.img
+	dd if=$(BUILD_DIR)/mbr.bin of=$(BUILD_DIR)/os-image.img conv=notrunc
+	dd if=$(BUILD_DIR)/mbr.bin of=$(BUILD_DIR)/os-image.img seek=6 conv=notrunc
+	mcopy -i $(BUILD_DIR)/os-image.img $(BUILD_DIR)/kernel.bin "::kernel.bin"
+
 
 clean:
 	rm -rf $(BUILD_DIR)/*.bin $(BUILD_DIR)/*.o

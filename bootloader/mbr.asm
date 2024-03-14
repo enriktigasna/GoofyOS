@@ -22,7 +22,7 @@ TotalSectors dd 0x2000 ;; 4 MB
 BigSectorsPerFAT dd 64
 Flags dw 0
 FSVersion dw 0
-RootDirectoryStart dd 160
+RootDirectoryStart dd 2
 FSInfoSector dw 1
 BackupBootSector dw 6
 
