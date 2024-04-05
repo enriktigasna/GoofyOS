@@ -7,9 +7,9 @@ disk_load:
     mov al, dh
     
     mov ch, 0x00
-    mov cl, 0x02
+    mov cl, 0x24
 
-    mov dh, 0x00
+    mov dh, 0x02
 
     int 0x13
     jc disk_error

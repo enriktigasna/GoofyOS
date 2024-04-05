@@ -1,1 +1,1 @@
-qemu-system-x86_64 ./build/bootloader.bin
+qemu-system-x86_64 ./build/os-image.img
