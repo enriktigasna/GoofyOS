@@ -1,5 +1,8 @@
 #include "vga_video.h"
 
+// TODO: add read_string
+// TODO: add read_color
+
 void VGA_putchar(char _char, int x, int y){
     volatile char* index = (volatile char*) 0xb8000;
 
@@ -20,9 +23,9 @@ void VGA_putchar_c(char _char, int x, int y, uint8_t color){
     *index++ = color;
 }
 
-void VGA_write_string(size_t size, char string[], int x, int y){
-    volatile char* index = (volatile char*) 0xb8000;
 
+// TODO: replace size with max_length and add \0 null terminator support
+void VGA_write_string(size_t size, char string[], int x, int y){
     for(int i = 0; i < size; i++) {
         // Return on \n
         if(string[i] == '\n'){
@@ -43,11 +46,12 @@ void VGA_write_string(size_t size, char string[], int x, int y){
     }
 }
 
+// TODO: replace size with max_length and add \0 null terminator support
 void VGA_write_string_c(size_t size, char string[], int x, int y, uint8_t color){
     volatile char* index = (volatile char*) 0xb8000;
 
     for(int i = 0; i < size; i++) {
-        // Return on \n
+        // Newline on \n
         if(string[i] == '\n'){
             y++;
             x = 0;
@@ -66,12 +70,11 @@ void VGA_write_string_c(size_t size, char string[], int x, int y, uint8_t color)
     }
 }
 
-
 void VGA_set_color (uint8_t color){
     volatile char* index = (volatile char*) 0xb8000;
 
     for(int i = 0; i<2000; i++) {
-        *index++ = 0;
+        index++;
         *index++ = color;
     }
 }

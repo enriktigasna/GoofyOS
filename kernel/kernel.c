@@ -1,5 +1,6 @@
 #include "stdint.h"
 #include "vga_video.h"
+#include "console.h"
 
 void zero_memory(volatile char *ptr, int size) {
     char* index = (char*) ptr;
@@ -12,11 +13,7 @@ void zero_memory(volatile char *ptr, int size) {
 
 
 void _start() {
-    volatile char* video_memory = (volatile char*) 0xb8000;
-    zero_memory(video_memory, 4000);
-    VGA_set_color(0x70);
-
-    char string[] = "GOOFYOS\nWelcome to GoofyOS\n";
-    VGA_write_string(sizeof(string), string, 0, 0);
-    VGA_write_string_c(sizeof(string), string, 0, 3, VGA_blue_f | VGA_brown_b | VGA_light_f);
+    struct CONSOLE csl;
+    csl.CONSOLE_color = VGA_black_b | VGA_lgray_f | VGA_light_f | VGA_light_b;
+    console_init(&csl);
 }

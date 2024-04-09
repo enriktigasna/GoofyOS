@@ -3,7 +3,8 @@ BOOTLOADER_DIR = bootloader
 KERNEL_DIR = kernel
 KERNEL_OBJECTS = $(BUILD_DIR)/kernel-entry.o \
 $(BUILD_DIR)/kernel.o \
-$(BUILD_DIR)/vga_video.o
+$(BUILD_DIR)/vga_video.o \
+$(BUILD_DIR)/console.o
 
 all: $(BUILD_DIR)/os-image.img
 
