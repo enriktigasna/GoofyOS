@@ -1,6 +1,9 @@
 BUILD_DIR = build
 BOOTLOADER_DIR = bootloader
 KERNEL_DIR = kernel
+KERNEL_OBJECTS = $(BUILD_DIR)/kernel-entry.o \
+$(BUILD_DIR)/kernel.o \
+$(BUILD_DIR)/vga_video.o
 
 all: $(BUILD_DIR)/os-image.img
 
@@ -8,13 +11,13 @@ all: $(BUILD_DIR)/os-image.img
 $(BUILD_DIR)/mbr.bin: $(BOOTLOADER_DIR)/mbr.asm
 	nasm -f bin $< -o $@
 
-$(BUILD_DIR)/kernel.o: $(KERNEL_DIR)/kernel.c
+$(BUILD_DIR)/%.o: $(KERNEL_DIR)/%.c
 	gcc -fno-pie -m32 -ffreestanding -c $< -o $@
 
 $(BUILD_DIR)/kernel-entry.o: $(KERNEL_DIR)/kernel-entry.asm
 	nasm -f elf $< -o $@
 
-$(BUILD_DIR)/kernel.bin: $(BUILD_DIR)/kernel-entry.o $(BUILD_DIR)/kernel.o
+$(BUILD_DIR)/kernel.bin: $(KERNEL_OBJECTS)
 	ld -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
 
 $(BUILD_DIR)/os-image.img: $(BUILD_DIR)/mbr.bin $(BUILD_DIR)/kernel.bin

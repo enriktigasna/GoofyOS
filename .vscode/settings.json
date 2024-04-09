@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "vga_text.h": "c",
+        "stdint.h": "c",
+        "printf.h": "c"
+    }
+}
