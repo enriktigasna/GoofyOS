@@ -18,4 +18,5 @@ void _start() {
 
     char string[] = "GOOFYOS\nWelcome to GoofyOS\n";
     VGA_write_string(sizeof(string), string, 0, 0);
+    VGA_write_string_c(sizeof(string), string, 0, 3, VGA_blue_f | VGA_brown_b | VGA_light_f);
 }

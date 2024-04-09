@@ -22,37 +22,50 @@ void VGA_putchar_c(char _char, int x, int y, uint8_t color){
 
 void VGA_write_string(size_t size, char string[], int x, int y){
     volatile char* index = (volatile char*) 0xb8000;
-    index = index + x * 2;
-    index = index + y * 2 * VGA_WIDTH;
 
     for(int i = 0; i < size; i++) {
-        if(string[i] == '\n') {
-            int offset = (int)(index - (volatile char*)0xb8000);
-            int remaining = VGA_WIDTH * 2 - (offset % (VGA_WIDTH * 2));
-            index += remaining;
+        // Return on \n
+        if(string[i] == '\n'){
+            y++;
+            x = 0;
             continue;
         }
-        *index++ = string[i];
-        index++;
+
+        // Put char
+        VGA_putchar(string[i], x, y);
+        x++;
+
+        // Return on end of line
+        if (x > VGA_WIDTH) {
+            x = 0;
+            y++;
+        }
     }
 }
 
 void VGA_write_string_c(size_t size, char string[], int x, int y, uint8_t color){
     volatile char* index = (volatile char*) 0xb8000;
-    index = index + x * 2;
-    index = index + y * 2 * VGA_WIDTH;
 
     for(int i = 0; i < size; i++) {
-        if(string[i] == '\n') {
-            int offset = (int)(index - (volatile char*)0xb8000);
-            int remaining = VGA_WIDTH * 2 - (offset % (VGA_WIDTH * 2));
-            index += remaining;
+        // Return on \n
+        if(string[i] == '\n'){
+            y++;
+            x = 0;
             continue;
         }
-        *index++ = string[i];
-        *index++ = color;
+
+        // Put char
+        VGA_putchar_c(string[i], x, y, color);
+        x++;
+
+        // Return on end of line
+        if (x > VGA_WIDTH) {
+            x = 0;
+            y++;
+        }
     }
 }
+
 
 void VGA_set_color (uint8_t color){
     volatile char* index = (volatile char*) 0xb8000;
