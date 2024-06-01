@@ -10,8 +10,8 @@ disk_load:
     mov al, 4       ;; Read 4 sectors
     
     mov ch, 0x00    ;; Grab Cylinder 0
-    mov cl, 32      ;; Grab Sector 33
-    mov dh, 0x00    ;; Grab Head 0
+    mov cl, 15      ;; Grab Sector 15
+    mov dh, 0x01    ;; Grab Head 1
 
     int 0x13        ;; Call disk interrupt
     jc disk_error
