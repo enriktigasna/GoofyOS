@@ -1,0 +1,22 @@
+[package]
+name = "kernel"
+version = "0.1.0"
+edition = "2021"
+
+# Disable the standard library
+[lib]
+crate-type = ["staticlib"]
+path = "src/lib.rs"
+
+[profile.release]
+opt-level = "z"
+lto = true
+panic = "abort"
+
+[profile.dev]
+opt-level = "z"
+lto = true
+panic = "abort"
+
+[build]
+target = "i386_kernel.json"

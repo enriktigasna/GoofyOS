@@ -1,7 +1,10 @@
 {
-    "files.associations": {
-        "vga_text.h": "c",
-        "stdint.h": "c",
-        "printf.h": "c"
-    }
+    // Ensures Rust Analyzer operates in the context of your kernel project
+    "rust-analyzer.linkedProjects": ["kernel/Cargo.toml"],
+    // Additional Rust Analyzer settings specific to your needs
+    "rust-analyzer.cargo.loadOutDirsFromCheck": true,
+    "rust-analyzer.procMacro.enable": false,
+    "rust-analyzer.cargo.allFeatures": true,
+    "rust-analyzer.workspace.symbolScope": "workspace",
+    "rust-analyzer.checkOnSave.allTargets": false
 }
