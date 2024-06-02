@@ -2,15 +2,12 @@
 disk_load:
     pusha
     mov bx, KERNEL_OFFSET  ;; Load it into KERNEL_OFFSET
-    ;; Fun fact: took me a whole day to figure out that I was supposed to use the offset instead of the segment
-    ;; I was trying to load it into 0x1000:0x0000 instead of 0x0000:0x1000
-    ;; Thank you bochs debugger
 
     mov ah, 0x02    ;; Read sectors
-    mov al,        ;; Read 4 sectors
+    mov al, 4       ;; Read 4 sectors
     
     mov ch, 0x00    ;; Grab Cylinder 0
-    mov cl, 15      ;; Grab Sector 15
+    mov cl, 16      ;; Grab Sector 16
     mov dh, 0x01    ;; Grab Head 1
 
     int 0x13        ;; Call disk interrupt
