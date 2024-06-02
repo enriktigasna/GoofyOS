@@ -12,11 +12,9 @@ path = "src/lib.rs"
 opt-level = "z"
 lto = true
 panic = "abort"
+codegen-units = 1
 
 [profile.dev]
 opt-level = "z"
 lto = true
 panic = "abort"
-
-[build]
-target = "i386_kernel.json"

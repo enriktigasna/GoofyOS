@@ -4,7 +4,7 @@ KERNEL_DIR = kernel
 RUST_TARGET_SPEC = i386_kernel
 
 # Kernel binary
-KERNEL_BIN = $(BUILD_DIR)/kernel.bin
+KERNEL_BIN = $(BUILD_DIR)/vmgoofuz
 
 # Disk image file
 DISK_IMG = $(BUILD_DIR)/os-image.img
@@ -18,7 +18,7 @@ $(BUILD_DIR)/mbr.bin: $(BOOTLOADER_DIR)/mbr.asm
 
 # Build Rust code into a static library
 $(BUILD_DIR)/libkernel.a:
-	@cd $(KERNEL_DIR) && cargo build --release -Zbuild-std --target $(RUST_TARGET_SPEC).json
+	@cd $(KERNEL_DIR) && cargo build --release --target $(RUST_TARGET_SPEC).json
 	cp $(KERNEL_DIR)/target/$(RUST_TARGET_SPEC)/release/libkernel.a $@
 
 # Link the final kernel binary from Rust static library
@@ -30,7 +30,7 @@ $(DISK_IMG): $(BUILD_DIR)/mbr.bin $(KERNEL_BIN)
 	dd if=/dev/zero of=$@ bs=512 count=2880
 	mkfs.fat -F 12 -s 1 -n "GOOFYOS" $@
 	dd if=$(BUILD_DIR)/mbr.bin of=$@ conv=notrunc
-	mcopy -i $@ $(KERNEL_BIN) "::kernel.bin"
+	mcopy -i $@ $(KERNEL_BIN) "::vmgoofuz"
 
 # Clean up
 clean:

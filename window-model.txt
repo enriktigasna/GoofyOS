@@ -1,0 +1,5 @@
+What I will use to make the GoofyOS console nice:
+
+                                                             
+ ╔════════════════════════════ Welcome to GoofyOS ════════════════════════════╗ 
+ 

@@ -7,7 +7,7 @@ disk_load:
     ;; Thank you bochs debugger
 
     mov ah, 0x02    ;; Read sectors
-    mov al, 4       ;; Read 4 sectors
+    mov al,        ;; Read 4 sectors
     
     mov ch, 0x00    ;; Grab Cylinder 0
     mov cl, 15      ;; Grab Sector 15

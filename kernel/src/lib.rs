@@ -4,14 +4,24 @@
 use core::arch::global_asm;
 use core::panic::PanicInfo;
 
+mod vga;
+
 global_asm!(include_str!("entry.asm"));
 
 #[no_mangle]
 pub extern "C" fn main() -> ! {
-    unsafe {
-        let vga_buffer = 0xb8000 as *mut u8;
+    let mut buffer = vga::buffer::Buffer::default();
+    let string = "Hello World";
+    let color = vga::color::ColorCode::default();
 
-        *vga_buffer = b'H';
+    match buffer.write_string(string, color){
+        Ok(()) => buffer.flush(),
+        Err(_) => {
+            unsafe {
+                let vgabuf = 0xb8000 as *mut u8;
+                vgabuf.write_volatile(b'P');
+            }
+        }
     }
 
     loop {}

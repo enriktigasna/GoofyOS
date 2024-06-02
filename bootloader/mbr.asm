@@ -7,7 +7,7 @@ nop
 %include "bootloader/bpb.inc"
 
 start:
-KERNEL_OFFSET equ 0x1000
+KERNEL_OFFSET equ 0x10000
 mov [BOOT_DRIVE], dl
 
 ;; Set up stack 
