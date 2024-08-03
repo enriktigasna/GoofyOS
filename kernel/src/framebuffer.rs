@@ -9,7 +9,7 @@ pub struct Framebuffer {
     pub height: usize,
     pub pitch: usize,
     pub bpp: u16,
-    pub pointer: *mut u8
+    pub pointer: *mut u8,
 }
 
 #[repr(C)]
@@ -33,15 +33,13 @@ impl Framebuffer {
             .next()
             .ok_or(FramebufferError::ResponseError)?;
 
-        Ok(
-            Framebuffer {
-                width: framebuffer.width() as usize,
-                height: framebuffer.height() as usize,
-                pitch: framebuffer.pitch() as usize,
-                bpp: framebuffer.bpp(),
-                pointer: framebuffer.addr()
-            }
-        )
+        Ok(Framebuffer {
+            width: framebuffer.width() as usize,
+            height: framebuffer.height() as usize,
+            pitch: framebuffer.pitch() as usize,
+            bpp: framebuffer.bpp(),
+            pointer: framebuffer.addr(),
+        })
     }
 
     pub fn set_pixel(&self, x: usize, y: usize, color: &Color) {
@@ -66,5 +64,4 @@ impl Framebuffer {
             }
         }
     }
-
 }

@@ -1,9 +1,6 @@
 use core::fmt::{self, Write};
 
-use crate::framebuffer::{
-    Color,
-    Framebuffer,
-};
+use crate::framebuffer::{Color, Framebuffer};
 
 pub static mut TERMINAL: Option<Terminal> = None;
 
@@ -18,18 +15,23 @@ pub struct Terminal {
 }
 
 impl Terminal {
-    pub fn new(framebuffer: Framebuffer, background: Color, foreground: Color, font: [[u8; 16]; 256]) -> Self {
+    pub fn new(
+        framebuffer: Framebuffer,
+        background: Color,
+        foreground: Color,
+        font: [[u8; 16]; 256],
+    ) -> Self {
         let rows = framebuffer.height / 16;
         let cols = framebuffer.width / 8;
 
-        Terminal { 
-            background, 
+        Terminal {
+            background,
             foreground,
             framebuffer,
-            font, 
+            font,
             rows,
             cols,
-            cursor: (0, 0)
+            cursor: (0, 0),
         }
     }
 
@@ -43,10 +45,11 @@ impl Terminal {
     // With match and shit
 
     pub fn write_char(&self, x: usize, y: usize, char: u8) {
-        let x = x*8;
-        let y = y*16;
+        let x = x * 8;
+        let y = y * 16;
         let char = &self.font[char as usize];
-        self.framebuffer.draw_bitmap_8x16(x, y, &self.foreground, &self.background, char);
+        self.framebuffer
+            .draw_bitmap_8x16(x, y, &self.foreground, &self.background, char);
     }
 }
 
@@ -54,8 +57,8 @@ impl core::fmt::Write for Terminal {
     fn write_str(&mut self, s: &str) -> core::fmt::Result {
         let bytes = s.as_bytes();
         for byte in bytes {
-            let x = self.cursor.0*8;
-            let y = self.cursor.1*16;
+            let x = self.cursor.0 * 8;
+            let y = self.cursor.1 * 16;
 
             match byte {
                 b'\n' => {
@@ -63,7 +66,13 @@ impl core::fmt::Write for Terminal {
                     self.cursor.1 += 1;
                 }
                 ascii_char => {
-                    self.framebuffer.draw_bitmap_8x16(x, y, &self.foreground, &self.background, &self.font[*ascii_char as usize]);
+                    self.framebuffer.draw_bitmap_8x16(
+                        x,
+                        y,
+                        &self.foreground,
+                        &self.background,
+                        &self.font[*ascii_char as usize],
+                    );
 
                     if self.cursor.0 < self.cols - 2 {
                         self.cursor.0 += 1;

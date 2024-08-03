@@ -1,7 +1,13 @@
 [package]
-name = "limine-rust-template"
+name = "GoofyOS"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 limine = "0.2.0"
+x86_64 = "0.15.1"
+spin = "0.9.8"
+
+[dependencies.lazy_static]
+version = "1.5.0"
+features = ["spin_no_std"]
