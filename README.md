@@ -6,5 +6,6 @@ Unix-like operating system
 ``make run`` to run qemu
 
 ## TODO:
-Make ANSI Colors struct
 Hardware interruppts
+Separate interrupts into one file, and IDT initialization into another
+Make ANSI Colors struct

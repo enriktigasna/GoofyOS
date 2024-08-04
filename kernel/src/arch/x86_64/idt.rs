@@ -1,6 +1,10 @@
-use crate::println;
 use lazy_static::lazy_static;
-use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
+use x86_64::structures::idt::InterruptDescriptorTable;
+
+use super::interrupts::breakpoint_handler;
+use super::interrupts::double_fault_handler;
+use super::interrupts::timer_interrupt_handler;
+use super::pic::InterruptIndex;
 
 lazy_static! {
     static ref IDT: InterruptDescriptorTable = {
@@ -11,6 +15,9 @@ lazy_static! {
                 .set_handler_fn(double_fault_handler)
                 .set_stack_index(0);
         }
+
+        idt[InterruptIndex::TIMER.as_u8()].set_handler_fn(timer_interrupt_handler);
+
         idt
     };
 }
@@ -19,13 +26,3 @@ pub fn init_idt() {
     IDT.load();
 }
 
-extern "x86-interrupt" fn breakpoint_handler(stack_frame: InterruptStackFrame) {
-    println!("Exception: Breakpoint\n{:#?}", stack_frame);
-}
-
-extern "x86-interrupt" fn double_fault_handler(
-    stack_frame: InterruptStackFrame,
-    error_code: u64,
-) -> ! {
-    panic!("Exception: DOUBLE FAULT\n{:#?} {}", stack_frame, error_code);
-}

@@ -7,10 +7,14 @@ pub mod panic;
 mod drivers;
 mod tty;
 
+use core::ptr::read_volatile;
+
 use drivers::framebuffer::{Color, Framebuffer};
 use arch::x86_64::gdt::init_gdt;
 use arch::x86_64::idt::init_idt;
+use arch::x86_64::pic::PICS;
 use tty::terminal::Terminal;
+use x86_64::instructions::interrupts::int3;
 
 
 pub fn init() {
@@ -29,6 +33,9 @@ pub fn init() {
 "
     );
     println!("Welcome to GoofyOS!");
+
     init_gdt();
     init_idt();
+    unsafe { PICS.lock().initialize() };
+    x86_64::instructions::interrupts::enable();
 }
