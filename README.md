@@ -5,4 +5,6 @@ Unix-like operating system
 ``make`` to make ISO
 ``make run`` to run qemu
 
-wip
+## TODO:
+Make ANSI Colors struct
+Hardware interruppts

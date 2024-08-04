@@ -1,4 +1,6 @@
 use limine::request::FramebufferRequest;
+use core::result::Result::Ok;
+use core::result::Result::Err;
 
 #[used]
 #[link_section = ".requests"]
