@@ -2,21 +2,19 @@
 #![no_std]
 #![no_main]
 
-use font::FONT;
-use gdt::init_gdt;
-use interrupts::init_idt;
 use limine::BaseRevision;
 
-mod font;
-mod framebuffer;
-mod gdt;
-mod interrupts;
-mod panic;
-mod terminal;
 
-use framebuffer::{Color, Framebuffer};
-use panic::hcf;
-use terminal::Terminal;
+mod arch;
+mod panic;
+mod drivers;
+mod tty;
+
+use drivers::framebuffer::{Color, Framebuffer};
+use panic::handler::hcf;
+use arch::x86_64::gdt::init_gdt;
+use arch::x86_64::idt::init_idt;
+use tty::terminal::Terminal;
 
 #[used]
 #[link_section = ".requests"]
@@ -27,7 +25,7 @@ unsafe extern "C" fn _start() -> ! {
     assert!(BASE_REVISION.is_supported());
 
     let framebuffer = Framebuffer::new().unwrap();
-    let terminal = Terminal::new(framebuffer, Color(0, 0, 0), Color(255, 255, 255), FONT);
+    let terminal = Terminal::new(framebuffer, Color(0, 0, 0), Color(255, 255, 255));
     terminal.init_global();
 
     println!(

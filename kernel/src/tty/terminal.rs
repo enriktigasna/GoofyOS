@@ -1,6 +1,7 @@
 use core::fmt::{self, Write};
 
-use crate::framebuffer::{Color, Framebuffer};
+use crate::drivers::framebuffer::{Color, Framebuffer};
+use super::font::FONT;
 
 pub static mut TERMINAL: Option<Terminal> = None;
 
@@ -19,7 +20,6 @@ impl Terminal {
         framebuffer: Framebuffer,
         background: Color,
         foreground: Color,
-        font: [[u8; 16]; 256],
     ) -> Self {
         let rows = framebuffer.height / 16;
         let cols = framebuffer.width / 8;
@@ -28,7 +28,7 @@ impl Terminal {
             background,
             foreground,
             framebuffer,
-            font,
+            font: FONT,
             rows,
             cols,
             cursor: (0, 0),
@@ -98,7 +98,7 @@ macro_rules! println {
 
 #[macro_export]
 macro_rules! print {
-    ($($arg:tt)*) => ($crate::terminal::_print(format_args!($($arg)*)));
+    ($($arg:tt)*) => ($crate::tty::terminal::_print(format_args!($($arg)*)));
 }
 
 pub fn _print(args: fmt::Arguments) {
