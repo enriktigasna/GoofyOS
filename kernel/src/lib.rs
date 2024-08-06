@@ -36,6 +36,7 @@ pub fn init() {
 
     init_gdt();
     init_idt();
+    int3();
     unsafe { PICS.lock().initialize() };
     x86_64::instructions::interrupts::enable();
 }

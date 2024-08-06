@@ -1,7 +1,7 @@
 # Nuke built-in rules and variables.
 override MAKEFLAGS += -rR
 
-override IMAGE_NAME := template
+override IMAGE_NAME := GoofyOS
 
 .PHONY: all
 all: $(IMAGE_NAME).iso
@@ -13,9 +13,13 @@ all-hdd: $(IMAGE_NAME).hdd
 run: $(IMAGE_NAME).iso
 	qemu-system-x86_64 -M q35 -m 2G -cdrom $(IMAGE_NAME).iso -boot d
 
+.PHONY: log
+log: $(IMAGE_NAME).iso
+	qemu-system-x86_64 -M q35 -m 2G -cdrom $(IMAGE_NAME).iso -boot d -d int -no-reboot -no-shutdown 
+
 .PHONY: debug
 debug: $(IMAGE_NAME).iso
-	qemu-system-x86_64 -M q35 -m 2G -cdrom $(IMAGE_NAME).iso -boot d -d int -no-reboot -no-shutdown 
+	qemu-system-x86_64 -s -S -M q35 -m 2G -cdrom $(IMAGE_NAME).iso -boot d -d int -no-reboot -no-shutdown 
 
 .PHONY: run-uefi
 run-uefi: ovmf $(IMAGE_NAME).iso

@@ -2,7 +2,7 @@ use core::ptr::addr_of;
 
 use lazy_static::lazy_static;
 use x86_64::{
-    instructions::tables::load_tss, registers::segmentation::{Segment, CS, DS, ES, FS}, structures::{
+    instructions::tables::load_tss, registers::segmentation::{Segment, CS, DS, ES, FS, GS, SS}, structures::{
         gdt::{ Descriptor, GlobalDescriptorTable, SegmentSelector },
         tss::TaskStateSegment,
     }, VirtAddr
@@ -54,8 +54,10 @@ pub fn init_gdt() {
     unsafe {
         CS::set_reg(GDT.1.kernel_code);
         DS::set_reg(GDT.1.kernel_data);
-        // ES::set_reg(GDT.1.user_code);
-        // FS::set_reg(GDT.1.user_data);
+        SS::set_reg(GDT.1.kernel_data);
+        // ES::set_reg(GDT.1.kernel_data);
+        // FS::set_reg(GDT.1.kernel_data);
+        // GS::set_reg(GDT.1.kernel_data);
         load_tss(GDT.1.tss);
     }
 }
