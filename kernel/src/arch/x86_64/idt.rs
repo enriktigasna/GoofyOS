@@ -6,7 +6,6 @@ use super::interrupts::breakpoint_handler;
 use super::interrupts::double_fault_handler;
 use super::interrupts::timer_interrupt_handler;
 use super::pic::InterruptIndex;
-use crate::println;
 
 lazy_static! {
     static ref IDT: InterruptDescriptorTable = {

@@ -2,13 +2,12 @@ use core::ptr::addr_of;
 
 use lazy_static::lazy_static;
 use x86_64::{
-    instructions::tables::load_tss, registers::segmentation::{Segment, CS, DS, ES, FS, GS, SS}, structures::{
+    instructions::tables::load_tss, registers::segmentation::{Segment, CS, DS, SS}, structures::{
         gdt::{ Descriptor, GlobalDescriptorTable, SegmentSelector },
         tss::TaskStateSegment,
     }, VirtAddr
 };
 
-use crate::println;
 
 lazy_static! {
     static ref TSS: TaskStateSegment = {

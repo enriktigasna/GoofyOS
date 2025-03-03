@@ -26,7 +26,7 @@ pub enum FramebufferError {
 
 impl Framebuffer {
     pub fn new() -> Result<Self, FramebufferError> {
-        let framebuffer_response = FRAMEBUFFER_REQUEST.get_response().unwrap();
+        let framebuffer_response = FRAMEBUFFER_REQUEST.get_response().expect("Failed to get framebuffer");
         if framebuffer_response.framebuffers().count() < 1 {
             return Err(FramebufferError::NoFramebuffer);
         }

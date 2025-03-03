@@ -6,17 +6,17 @@ mod arch;
 pub mod panic;
 mod drivers;
 mod tty;
+mod mm;
 
 use drivers::framebuffer::{Color, Framebuffer};
 use arch::x86_64::{gdt::init_gdt, timer::init_pit};
 use arch::x86_64::idt::init_idt;
 use arch::x86_64::pic::PICS;
 use tty::terminal::Terminal;
-use x86_64::instructions::interrupts::int3;
 
 
 pub fn init() {
-    let framebuffer = Framebuffer::new().unwrap();
+    let framebuffer = Framebuffer::new().expect("Failed to get framebuffer");
     let terminal = Terminal::new(framebuffer, Color(0, 0, 0), Color(255, 255, 255));
     terminal.init_global();
 
@@ -34,9 +34,7 @@ pub fn init() {
 
     init_gdt();
     init_idt();
-    int3();
     unsafe { PICS.lock().initialize() };
     x86_64::instructions::interrupts::enable();
-    
-    init_pit(1);
+    init_pit(100);
 }

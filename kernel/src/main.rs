@@ -4,8 +4,6 @@
 
 use limine::BaseRevision;
 
-use goofy_os::panic::handler::hcf;
-
 #[used]
 #[link_section = ".requests"]
 static BASE_REVISION: BaseRevision = BaseRevision::new();

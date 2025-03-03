@@ -104,7 +104,7 @@ macro_rules! print {
 pub fn _print(args: fmt::Arguments) {
     unsafe {
         if let Some(terminal) = TERMINAL.as_mut() {
-            terminal.write_fmt(args).unwrap();
+            terminal.write_fmt(args).expect("Failed to print");
         }
     }
 }
