@@ -15,5 +15,5 @@ unsafe extern "C" fn _start() -> ! {
     assert!(BASE_REVISION.is_supported());
 
     goofy_os::init();
-    hcf();
+    loop {}
 }
