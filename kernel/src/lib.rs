@@ -12,7 +12,9 @@ use drivers::framebuffer::{Color, Framebuffer};
 use arch::x86_64::{gdt::init_gdt, timer::init_pit};
 use arch::x86_64::idt::init_idt;
 use arch::x86_64::pic::PICS;
+use mm::mapper::MAPPER;
 use tty::terminal::Terminal;
+use x86_64::PhysAddr;
 
 
 pub fn init() {
