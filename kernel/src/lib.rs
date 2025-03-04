@@ -12,9 +12,8 @@ use drivers::framebuffer::{Color, Framebuffer};
 use arch::x86_64::{gdt::init_gdt, timer::init_pit};
 use arch::x86_64::idt::init_idt;
 use arch::x86_64::pic::PICS;
-use mm::mapper::MAPPER;
+use mm::page_alloc::{init_global_pagealloc, PAGEALLOC};
 use tty::terminal::Terminal;
-use x86_64::PhysAddr;
 
 
 pub fn init() {
@@ -39,4 +38,5 @@ pub fn init() {
     unsafe { PICS.lock().initialize() };
     x86_64::instructions::interrupts::enable();
     init_pit(100);
+    init_global_pagealloc();
 }
