@@ -39,4 +39,16 @@ pub fn init() {
     x86_64::instructions::interrupts::enable();
     init_pit(100);
     init_global_pagealloc();
+
+    #[allow(static_mut_refs)]
+    unsafe {
+        // Allocate 16 pages and print
+        for i in 0..0x79000 {
+            let page_ptr: *mut u8 = PAGEALLOC.lock().as_mut().expect("Page Allocator Uninitialized").alloc_page();
+
+            if i % 0x10000 == 0 {
+                println!("Allocated 256MiB at {:x}", page_ptr as usize);
+            }
+        }
+    }
 }

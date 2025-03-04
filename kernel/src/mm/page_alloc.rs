@@ -1,9 +1,9 @@
 use limine::{memory_map::{Entry, EntryType}, request::MemoryMapRequest};
 use spin::Mutex;
-use x86_64::structures::paging::Page;
+use x86_64::{PhysAddr, VirtAddr};
 use core::ptr;
 
-use crate::println;
+use crate::{mm::mapper::MAPPER, println};
 
 pub static mut PAGEALLOC: Mutex<Option<PageAlloc>> = Mutex::new(None);
 
@@ -36,9 +36,7 @@ impl PageAlloc {
 
         for &entry in memory_map {
             if entry.entry_type == EntryType::USABLE {
-                println!("Base {:x}\nLength {:x}\n\n", entry.base, entry.length);
-
-                let node_ptr = entry.base as *mut PageFreelist;
+                let node_ptr: *mut PageFreelist = MAPPER.phys_to_virt(PhysAddr::new(entry.base)).as_mut_ptr();
                 unsafe {
                     ptr::write(node_ptr, PageFreelist {
                         next: pagealloc.freelist_head,
@@ -54,8 +52,39 @@ impl PageAlloc {
         pagealloc
     }
 
-    pub fn alloc_page(&mut self) -> *mut u8 {
-        todo!()
+    pub unsafe fn alloc_page(&mut self) -> *mut u8 {
+        // If size > 1, push freelist head to next page
+        // If size == 1, set head to next
+        
+        let head = self.freelist_head.expect("Out of memory");
+        match (*head).size {
+            0 => panic!("Corrupted page allocator state"),
+            1 => {
+                self.freelist_head = (*head).next
+            },
+            _ => {
+                let new_head: *mut PageFreelist = head.byte_add(0x1000);
+                ptr::write(new_head, PageFreelist {
+                    next: (*head).next,
+                    size: (*head).size-1
+                });
+
+                self.freelist_head = Some(new_head)
+            }
+        }
+
+        return head as *mut u8
+    }
+
+    pub unsafe fn dealloc_page(&mut self, ptr: *mut u8) {
+        // write a PageFreelist in it and set it to head
+        let ptr = ptr as *mut PageFreelist;
+        ptr::write(ptr, PageFreelist {
+            next: self.freelist_head,
+            size: 1
+        });
+
+        self.freelist_head = Some(ptr);
     }
 }
 
