@@ -13,7 +13,7 @@ use arch::x86_64::{gdt::init_gdt, timer::init_pit};
 use arch::x86_64::idt::init_idt;
 use arch::x86_64::pic::PICS;
 use mm::page_alloc::{init_global_pagealloc, PAGEALLOC};
-use mm::slab_alloc::{init_global_slab, SlabFreelist};
+use mm::slab_alloc::{init_global_slab, SlabFreelist, SLABALLOC};
 use mm::virtual_alloc::{init_global_vmalloc, VIRTUALALLOC};
 use tty::terminal::Terminal;
 
@@ -46,9 +46,27 @@ pub fn init() {
 
     unsafe {
         // Allocate 16 pages and print
-        for i in 0..0x20 {
+        for i in 0..8 {
             let ptr = VIRTUALALLOC.lock().as_mut().unwrap().vmalloc_pages(0x1000);
             println!("16 MiB continous virtual alloc at {:x}", ptr as usize)
+        }
+    }
+
+    unsafe {
+        for _ in 0..0x1000 {
+            let _ptr = SLABALLOC.lock().as_mut().unwrap().alloc_chunk(1024);
+            let _ptr = SLABALLOC.lock().as_mut().unwrap().alloc_chunk(16);
+        }
+
+        for _ in 0..2 {
+            for sz in [16, 32, 64, 128, 256, 512, 1024, 2048] {
+                let ptr = SLABALLOC.lock().as_mut().unwrap().alloc_chunk(sz);
+                println!("Allocated chunk of size {} at 0x{:x}", sz, ptr as usize);
+                ptr.write_bytes(0x41, sz as usize);
+                SLABALLOC.lock().as_mut().unwrap().free_chunk(ptr);
+                println!("Freed chunk of size {} at 0x{:x}", sz, ptr as usize);
+            }
+            println!("--------------------------------------");
         }
     }
 }

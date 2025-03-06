@@ -39,7 +39,7 @@ impl SlabAlloc {
     unsafe fn create_slab(&mut self, size: u32) -> *mut SlabDescriptor {
         // Dead slab space should be filled with 512s at least
         // Because otherwise there will be wasted space
-        /* ┌──────────────┐◄──────────── 8B    SlabDescriptor
+        /* ┌──────────────┐◄──────────── 16B   SlabDescriptor
          * ├──────────────┤◄──────────── 504B  Unused space
          * ├──────────────┤◄──────────── 512B  Slab
          * ├──────────────┤◄──────────── 1024B Slab
