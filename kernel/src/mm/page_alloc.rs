@@ -1,10 +1,11 @@
 use limine::{memory_map::{Entry, EntryType}, request::MemoryMapRequest};
 use spin::Mutex;
-use x86_64::{PhysAddr, VirtAddr};
+use x86_64::PhysAddr;
 use core::ptr;
 
-use crate::{mm::mapper::MAPPER, println};
+use crate::mm::mapper::MAPPER;
 
+// TODO: Check if UnsafeCell is real
 pub static mut PAGEALLOC: Mutex<Option<PageAlloc>> = Mutex::new(None);
 
 #[used]
@@ -88,7 +89,6 @@ impl PageAlloc {
     }
 }
 
-#[allow(static_mut_refs)]
 pub fn init_global_pagealloc() {
     unsafe {
         if PAGEALLOC.lock().is_some() {

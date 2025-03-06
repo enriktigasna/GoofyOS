@@ -13,6 +13,8 @@ use arch::x86_64::{gdt::init_gdt, timer::init_pit};
 use arch::x86_64::idt::init_idt;
 use arch::x86_64::pic::PICS;
 use mm::page_alloc::{init_global_pagealloc, PAGEALLOC};
+use mm::slab_alloc::{init_global_slab, SlabFreelist};
+use mm::virtual_alloc::{init_global_vmalloc, VIRTUALALLOC};
 use tty::terminal::Terminal;
 
 
@@ -39,16 +41,14 @@ pub fn init() {
     x86_64::instructions::interrupts::enable();
     init_pit(100);
     init_global_pagealloc();
+    init_global_vmalloc();
+    init_global_slab();
 
-    #[allow(static_mut_refs)]
     unsafe {
         // Allocate 16 pages and print
-        for i in 0..0x79000 {
-            let page_ptr: *mut u8 = PAGEALLOC.lock().as_mut().expect("Page Allocator Uninitialized").alloc_page();
-
-            if i % 0x10000 == 0 {
-                println!("Allocated 256MiB at {:x}", page_ptr as usize);
-            }
+        for i in 0..0x20 {
+            let ptr = VIRTUALALLOC.lock().as_mut().unwrap().vmalloc_pages(0x1000);
+            println!("16 MiB continous virtual alloc at {:x}", ptr as usize)
         }
     }
 }
