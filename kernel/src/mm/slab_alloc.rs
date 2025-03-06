@@ -1,8 +1,7 @@
 // Each slab has a descriptor that is in the beginning
-// TODO: Figure out some smartass algorithm for this shit
-// 2048 SLABS Are special: Second half = 2048, first half = 512 + 1024
+// 2048 SLABS Are special: 512 + 1024 + 2048
 // 1024 SLABS Are also special: 512 + 1024*3
-// 512 slabs can be just regular
+// 512 slabs and smaller are all only filled with chunks of their size
 
 use spin::Mutex;
 
@@ -171,7 +170,28 @@ impl SlabAlloc {
     unsafe fn get_chunk_size(chunk: *mut u8) -> u32 {
         let slab_descriptor = (chunk as u64 & !0xfff) as *mut SlabDescriptor;
         let slab_size = (*slab_descriptor).size;
-        todo!()
+
+        match slab_size {
+            1024 => {
+                let page_offset = chunk as u64 & 0xfff;
+                if page_offset >= 1024 {
+                    1024
+                } else {
+                    512
+                }
+            }
+            2048 => {
+                let page_offset = chunk as u64 & 0xfff;
+                if page_offset >= 2048 {
+                    2048
+                } else if page_offset >= 1024 {
+                    1024
+                } else {
+                    512
+                }
+            }
+            _ => return slab_size.into()
+        }
     }
 }
 
